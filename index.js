@@ -155,50 +155,6 @@ async function run() {
       const product = await productCollection.findOne(query);
       res.json(product);
     });
-
-    // app.get("/myorder/:email", async (req, res) => {
-    //     const email = req.params.email;
-    //     const query = { email: email };
-    //     const courser = orderCollection.find(query);
-    //     const orders = await courser.toArray();
-    //     res.send(orders);
-    // });
-
-    // app.get("/manageorder", async (req, res) => {
-    //     const courser = orderCollection.find({});
-    //     const orders = await courser.toArray();
-    //     res.send(orders);
-    // });
-    // app.post("/order", async (req, res) => {
-    //     const order = req.body;
-    //     const result = await orderCollection.insertOne(order)
-    //     res.send(result);
-    // });
-
-    // app.delete("/order/:id", async (req, res) => {
-    //     const id = req.params.id;
-    //     console.log(id);
-    //     const query = { _id: ObjectId(id) };
-    //     const result = await orderCollection.deleteOne(query);
-    //     res.json(result);
-    // });
-
-    // app.put("/order/:id", async (req, res) => {
-    //     const id = req.params.id;
-    //     const filter = { _id: ObjectId(id) };
-    //     const options = {
-    //         upsert: true
-    //     };
-    //     const updateDoc = {
-    //         $set: {
-    //             status: "approve"
-    //         }
-    //     };
-    //     const result = await orderCollection.updateOne(filter, updateDoc);
-    //     console.log("updated");
-    //     res.json(result)
-
-    // })
   } finally {
     // await client.close();
   }
