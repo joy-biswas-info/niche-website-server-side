@@ -41,7 +41,8 @@ async function run() {
     const db_name = "nich_website";
     const db = client.db(db_name);
     const productCollection = db.collection("product");
-    const orderCollection = db.collection("order_collection");
+      const orderCollection = db.collection("order_collection");
+      const userCollection = db.collection('user')
 
     // // Get api (Get All Products)
     app.get("/products", async (req, res) => {
@@ -57,10 +58,11 @@ async function run() {
       }
     });
 
-    // Get All Orders
-    app.get("/orders", verifyToken, async (req, res) => {
+    // Get my order Orders
+      app.get("/orders", verifyToken, async (req, res) => {
+        let query = {};
       const email = req.query.email;
-      if (req.decodedEmail === email) {
+      if (req?.decodedEmail === email) {
         query = { email: email };
         const cursor = orderCollection.find(query);
         const places = await cursor.toArray();
@@ -68,6 +70,26 @@ async function run() {
       } else {
           res.send(401).json({message:'User not Authorize'})
       }
+      });
+      
+    //   Get User 
+      app.get('/user/:email', async(req, res) => {
+          const email = req.params.email;
+          const query = { email: email };
+          const user = await userCollection.findOne(query);
+          let isAdmin = false;
+          if (user?.role === 'admin') {
+              isAdmin = true;
+          }
+          res.json({admin:isAdmin})
+      })
+
+
+    // Get All order Orders
+      app.get("/orders/manage", verifyToken, async (req, res) => {
+        const cursor = orderCollection.find({});
+        const places = await cursor.toArray();
+        res.send(places);
     });
 
     // Post api (Add Products)
@@ -76,6 +98,32 @@ async function run() {
       const result = await productCollection.insertOne(product);
       res.json(result);
     });
+      
+    //   Add Users 
+    app.post("/user", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.json(result);
+    });
+      
+    //   Add User From Google Log in 
+      app.put('/user', async(req, res) => {
+          const user = req.body;
+          const filter = { email: user.email };
+          const options = { upsert: true };
+          const updateDoc = { $set: user }
+          const result =await userCollection.updateOne(filter, updateDoc, options)
+          res.json(result)
+      })
+      
+    //   Add admin
+      app.put('/user/admin', async(req, res) => {
+          const user = req.body;
+          const filter = { email: user.email };
+          const updateDoc = { $set: {role:'admin'} }
+          const result =await userCollection.updateOne(filter, updateDoc)
+          res.json(result);
+    })
 
     // Place An Order
     app.post("/order", async (req, res) => {
