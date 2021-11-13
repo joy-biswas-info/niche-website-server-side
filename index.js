@@ -148,6 +148,29 @@ async function run() {
       res.json(result);
     });
 
+    app.delete("/order/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
+      res.json(result);
+    });
+    
+    app.put("/order/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = {
+          upsert: true
+      };
+      const updateDoc = {
+          $set: {
+              status: "approve"
+          }
+      };
+      const result = await orderCollection.updateOne(filter, updateDoc);
+      res.json(result)
+      
+  })
     // Conditional  find Api (Find Products By id)
     app.get("/placeorder/:id", async (req, res) => {
       const id = req.params.id;
